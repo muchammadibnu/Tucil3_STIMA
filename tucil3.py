@@ -98,10 +98,11 @@ if(__name__== "__main__"):
         print("\nPATH MENUJU SOLUSI:")
         mulai = 0
         history=[copy.deepcopy(Puzzle)]
-        queue=[]
+        queue=[copy.deepcopy(Puzzle)]
         costQueue=[]
         mulai= mulai + time.time_ns()
         while(costPuzzle(tempPuzzle)!=0):
+            del queue[0]
             upPuzzle=copy.deepcopy(tempPuzzle)
             downPuzzle=copy.deepcopy(tempPuzzle)
             leftPuzzle=copy.deepcopy(tempPuzzle)
@@ -152,6 +153,7 @@ if(__name__== "__main__"):
                         break;
             level= level + 1
             tempPuzzle=copy.deepcopy(popQueue(queue,costQueue))
+            queue.insert(0,tempPuzzle)
             printPuzzle(tempPuzzle)
         mulai= time.time_ns() - mulai
         print("Jumlah simpul yang dibangkitkan adalah ", countSimpul)
