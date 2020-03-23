@@ -68,10 +68,12 @@ def assignPuzzle(Puzzle,newPuzzle):
         for j in range(4):
             newPuzzle[i][j]=Puzzle[i][j]
 def checkHistory(History,Puzzle):
-    for k in range(len(History)):
+    if(len(History)==0):
+        return True
+    for history in History:
         for i in range(4):
             for j in range(4):
-                if(Puzzle[i][j]!=history[k][i][j]):
+                if(Puzzle[i][j]!=history[i][j]):
                     return True
     return False
 def popQueue(Queue,CostQueue,TempPuzzle):
@@ -112,12 +114,13 @@ if(__name__== "__main__"):
         rightPuzzle=[[0 for i in range(4)] for i in range(4)]
         mulai = 0
         history=[]
-        history.insert(0,Puzzle)
+        history.append(Puzzle)
         queue=[]
+        queue.append(Puzzle)
         costQueue=[]
         mulai= mulai + time.time_ns()
-        while(costPuzzle(tempPuzzle)!=0):
-            costMin=0
+        while(costPuzzle(tempPuzzle)!=0 and len(queue)!=0):
+            del queue[0]
             assignPuzzle(tempPuzzle,upPuzzle)
             assignPuzzle(tempPuzzle,downPuzzle)
             assignPuzzle(tempPuzzle,leftPuzzle)
@@ -131,7 +134,7 @@ if(__name__== "__main__"):
                             downPuzzle[i-1][j]=16
                             if(checkHistory(history,downPuzzle)):
                                 countSimpul = countSimpul + 1
-                                history.insert(0,downPuzzle)
+                                history.append(downPuzzle)
                                 queue.insert(0,downPuzzle)
                                 cost=costPuzzle(downPuzzle)+level
                                 costQueue.insert(0,cost)
@@ -141,7 +144,7 @@ if(__name__== "__main__"):
                             upPuzzle[i+1][j]=16
                             if(checkHistory(history,upPuzzle)):
                                 countSimpul = countSimpul + 1
-                                history.insert(0,upPuzzle)
+                                history.append(upPuzzle)
                                 queue.insert(0,upPuzzle)
                                 cost=costPuzzle(upPuzzle)+level
                                 costQueue.insert(0,cost)
@@ -151,7 +154,7 @@ if(__name__== "__main__"):
                             leftPuzzle[i][j+1]=16
                             if(checkHistory(history,leftPuzzle)):
                                 countSimpul = countSimpul + 1
-                                history.insert(0,leftPuzzle)
+                                history.append(leftPuzzle)
                                 queue.insert(0,leftPuzzle)
                                 cost=costPuzzle(leftPuzzle)+level
                                 costQueue.insert(0,cost)
@@ -161,13 +164,14 @@ if(__name__== "__main__"):
                             rightPuzzle[i][j-1]=16
                             if(checkHistory(history,rightPuzzle)):
                                 countSimpul = countSimpul + 1
-                                history.insert(0,rightPuzzle)
+                                history.append(rightPuzzle)
                                 queue.insert(0,rightPuzzle)
                                 cost=costPuzzle(rightPuzzle)+level
                                 costQueue.insert(0,cost)
                         break;
             level= level + 1
             popQueue(queue,costQueue,tempPuzzle)
+            queue.insert(0,tempPuzzle)
             printPuzzle(tempPuzzle)
         mulai= time.time_ns() - mulai
         print("Jumlah simpul yang dibangkitkan adalah ", countSimpul)
