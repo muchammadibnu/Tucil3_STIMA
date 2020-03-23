@@ -1,4 +1,5 @@
 import time
+import copy
 def costPuzzle(Puzzle):
     cost=0
     for i in range(0,4):
@@ -63,25 +64,17 @@ def printPuzzle(Puzzle):
                 print("    ",end='')
         print()
     print("----------------------------------------")
-def assignPuzzle(Puzzle,newPuzzle):
-    for i in range(4):
-        for j in range(4):
-            newPuzzle[i][j]=Puzzle[i][j]
-def checkHistory(History,Puzzle):
-    if Puzzle in History:
-        False
-    else:
-        True
-def popQueue(Queue,CostQueue,TempPuzzle):
+def popQueue(Queue,CostQueue):
     costMin = 10000000000000000000000000000000000000000000
     idx=0
     for i in range(len(CostQueue)):
         if(costMin>CostQueue[i]):
             costMin=CostQueue[i]
             idx=i
-    assignPuzzle(Queue[idx],TempPuzzle)
+    TempPuzzle=copy.deepcopy(Queue[idx])
     del CostQueue[idx]
     del Queue[idx]
+    return TempPuzzle
 if(__name__== "__main__"):
     Puzzle=[[0 for i in range(4)] for i in range(4)]
     namefile=input("Masukkan nama file: ")
@@ -99,75 +92,66 @@ if(__name__== "__main__"):
     print("PUZZLE AWAL:")
     printPuzzle(Puzzle)
     level=1
-    tempPuzzle=[[0 for i in range(4)] for i in range(4)]
-    assignPuzzle(Puzzle,tempPuzzle)
+    tempPuzzle=copy.deepcopy(Puzzle)
     countSimpul=0
     if(kurangPuzzle(Puzzle)):
         print("\nPATH MENUJU SOLUSI:")
-        upPuzzle=[[0 for i in range(4)] for i in range(4)]
-        downPuzzle=[[0 for i in range(4)] for i in range(4)]
-        leftPuzzle=[[0 for i in range(4)] for i in range(4)]
-        rightPuzzle=[[0 for i in range(4)] for i in range(4)]
         mulai = 0
-        history=[]
-        history.append(Puzzle)
+        history=[copy.deepcopy(Puzzle)]
         queue=[]
-        queue.append(Puzzle)
         costQueue=[]
         mulai= mulai + time.time_ns()
-        while(costPuzzle(tempPuzzle)!=0 and len(queue)!=0):
-            del queue[0]
-            assignPuzzle(tempPuzzle,upPuzzle)
-            assignPuzzle(tempPuzzle,downPuzzle)
-            assignPuzzle(tempPuzzle,leftPuzzle)
-            assignPuzzle(tempPuzzle,rightPuzzle)
+        while(costPuzzle(tempPuzzle)!=0):
+            upPuzzle=copy.deepcopy(tempPuzzle)
+            downPuzzle=copy.deepcopy(tempPuzzle)
+            leftPuzzle=copy.deepcopy(tempPuzzle)
+            rightPuzzle=copy.deepcopy(tempPuzzle)
             for i in range(0,4):
                 for j in range(0,4):
                     if(tempPuzzle[i][j]==16):
                         #cek down
                         if(i-1>=0):
-                            downPuzzle[i][j]=downPuzzle[i-1][j]
+                            downPuzzle[i][j]=int(downPuzzle[i-1][j])
                             downPuzzle[i-1][j]=16
-                            if(checkHistory(history,downPuzzle)):
+                            if(downPuzzle not in history):
                                 countSimpul = countSimpul + 1
-                                history.append(downPuzzle)
-                                queue.insert(0,downPuzzle)
+                                history.insert(0,(downPuzzle))
+                                queue.insert(0,(downPuzzle))
                                 cost=costPuzzle(downPuzzle)+level
                                 costQueue.insert(0,cost)
                         #cek up
                         if(i+1<4):
-                            upPuzzle[i][j]=upPuzzle[i+1][j]
+                            upPuzzle[i][j]=int(upPuzzle[i+1][j])
                             upPuzzle[i+1][j]=16
-                            if(checkHistory(history,upPuzzle)):
+                            if(upPuzzle not in history):
                                 countSimpul = countSimpul + 1
-                                history.append(upPuzzle)
-                                queue.insert(0,upPuzzle)
+                                history.insert(0,(upPuzzle))
+                                queue.insert(0,(upPuzzle))
                                 cost=costPuzzle(upPuzzle)+level
                                 costQueue.insert(0,cost)
                         #cek left
                         if(j+1<4):
-                            leftPuzzle[i][j]=leftPuzzle[i][j+1]
+                            leftPuzzle[i][j]=int(leftPuzzle[i][j+1])
                             leftPuzzle[i][j+1]=16
-                            if(checkHistory(history,leftPuzzle)):
+                            if(leftPuzzle not in history):
                                 countSimpul = countSimpul + 1
-                                history.append(leftPuzzle)
-                                queue.insert(0,leftPuzzle)
+                                history.insert(0,(leftPuzzle))
+                                queue.insert(0,(leftPuzzle))
                                 cost=costPuzzle(leftPuzzle)+level
                                 costQueue.insert(0,cost)
                         #cek right
                         if(j-1>=0):
-                            rightPuzzle[i][j]=rightPuzzle[i][j-1]
+                            rightPuzzle[i][j]=int(rightPuzzle[i][j-1])
                             rightPuzzle[i][j-1]=16
-                            if(checkHistory(history,rightPuzzle)):
+                            if(rightPuzzle not in history):
                                 countSimpul = countSimpul + 1
-                                history.append(rightPuzzle)
-                                queue.insert(0,rightPuzzle)
+                                history.insert(0,(rightPuzzle))
+                                queue.insert(0,(rightPuzzle))
                                 cost=costPuzzle(rightPuzzle)+level
                                 costQueue.insert(0,cost)
                         break;
             level= level + 1
-            popQueue(queue,costQueue,tempPuzzle)
-            queue.insert(0,tempPuzzle)
+            tempPuzzle=copy.deepcopy(popQueue(queue,costQueue))
             printPuzzle(tempPuzzle)
         mulai= time.time_ns() - mulai
         print("Jumlah simpul yang dibangkitkan adalah ", countSimpul)
