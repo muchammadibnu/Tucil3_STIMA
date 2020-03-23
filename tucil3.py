@@ -21,7 +21,7 @@ def kurangPuzzle(Puzzle):
                 if(Puzzle[i][j]==idx+1):            
                     kurangi=0
                     print("-----------------")
-                    print("Indeks ke-",i+1)
+                    print("Indeks ke-",idx+1)
                     for k in range(i,4):
                         for l in range(4):
                             if(k*4+l+1>i*4+j+1 and Puzzle[k][l]<idx+1):
@@ -68,14 +68,10 @@ def assignPuzzle(Puzzle,newPuzzle):
         for j in range(4):
             newPuzzle[i][j]=Puzzle[i][j]
 def checkHistory(History,Puzzle):
-    if(len(History)==0):
-        return True
-    for history in History:
-        for i in range(4):
-            for j in range(4):
-                if(Puzzle[i][j]!=history[i][j]):
-                    return True
-    return False
+    if Puzzle in History:
+        False
+    else:
+        True
 def popQueue(Queue,CostQueue,TempPuzzle):
     costMin = 10000000000000000000000000000000000000000000
     idx=0
