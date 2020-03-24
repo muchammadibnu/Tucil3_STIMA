@@ -153,6 +153,8 @@ if(__name__== "__main__"):
                         break;
             level= level + 1
             tempPuzzle=copy.deepcopy(popQueue(queue,costQueue))
+            if(len(queue)==0):
+                break;
             queue.insert(0,tempPuzzle)
             printPuzzle(tempPuzzle)
         mulai= time.time_ns() - mulai
