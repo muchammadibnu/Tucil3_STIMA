@@ -81,17 +81,14 @@ def printPuzzle(Puzzle):
 ''' Fungsi untuk mengambil simpul dari Queue yang memiliki cost terkecil. 
     Mengembalikkan simpul dari antrian Queue yang memiliki nilai terkecil. 
 '''
-def popQueue(Queue,CostQueue):
+def popQueue(Queue,CostQueue,levelQueue):
     costMin = 10000000000000000000000000000000000000000000
     idx=0
     for i in range(len(CostQueue)):
         if(costMin>CostQueue[i]):
             costMin=CostQueue[i]
             idx=i
-    TempPuzzle=copy.deepcopy(Queue[idx])
-    del CostQueue[idx]
-    del Queue[idx]
-    return TempPuzzle
+    return idx
 ''' MAIN PROGRAM
 '''
 if(__name__== "__main__"):
@@ -129,8 +126,12 @@ if(__name__== "__main__"):
         history=[copy.deepcopy(Puzzle)]
         # Variabel antrian Queue untuk simpul yang akan dibangkitkan
         queue=[copy.deepcopy(Puzzle)]
-        # Variabel penampul nilai Cost dari antrian Queue
+        # Variabel penampung nilai Cost dari antrian Queue
         costQueue=[]
+        # Variabel penampung nilai kedalaman simpul/level
+        levelQueue=[]
+        # Variabel penampung index dari antrian Queue yang diambil
+        idx=0
         mulai= mulai + time.time_ns()
         # Jika g(x) bernilai nol hentikan pencarian solusi (urutan Puzzle sudah tepat)
         while(costPuzzle(tempPuzzle)!=0):
@@ -155,6 +156,7 @@ if(__name__== "__main__"):
                                 queue.insert(0,(downPuzzle))
                                 cost=costPuzzle(downPuzzle)+level
                                 costQueue.insert(0,cost)
+                                levelQueue.insert(0,level)
                         # Pengecekan state up
                         if(i+1<4):
                             upPuzzle[i][j]=int(upPuzzle[i+1][j])
@@ -166,6 +168,7 @@ if(__name__== "__main__"):
                                 queue.insert(0,(upPuzzle))
                                 cost=costPuzzle(upPuzzle)+level
                                 costQueue.insert(0,cost)
+                                levelQueue.insert(0,level)
                         # Pengecekan state left
                         if(j+1<4):
                             leftPuzzle[i][j]=int(leftPuzzle[i][j+1])
@@ -177,6 +180,7 @@ if(__name__== "__main__"):
                                 queue.insert(0,(leftPuzzle))
                                 cost=costPuzzle(leftPuzzle)+level
                                 costQueue.insert(0,cost)
+                                levelQueue.insert(0,level)
                         # Pengecekan state righta
                         if(j-1>=0):
                             rightPuzzle[i][j]=int(rightPuzzle[i][j-1])
@@ -188,9 +192,14 @@ if(__name__== "__main__"):
                                 queue.insert(0,(rightPuzzle))
                                 cost=costPuzzle(rightPuzzle)+level
                                 costQueue.insert(0,cost)
+                                levelQueue.insert(0,level)
                         break;
-            level= level + 1
-            tempPuzzle=copy.deepcopy(popQueue(queue,costQueue))
+            idx = popQueue(queue,costQueue,levelQueue)
+            level = levelQueue[idx] + 1
+            tempPuzzle=copy.deepcopy(queue[idx])
+            del costQueue[idx]
+            del queue[idx]
+            del levelQueue[idx]
             # Jika Antrian kosong hentikan pencarian solusi
             if(len(queue)==0):
                 print("Program dihentikan akibat antrian sudah kosong")
